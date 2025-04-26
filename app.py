@@ -11,14 +11,12 @@ app = Flask(__name__)
 
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 SHEET_ID = os.environ.get('SHEET_ID')
-GOOGLE_CREDENTIALS_JSON = os.environ.get('GOOGLE_CREDENTIALS_JSON')
 
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 
-# 直接解析JSON，不写临时文件
-credentials_info = json.loads(GOOGLE_CREDENTIALS_JSON)
-credentials = service_account.Credentials.from_service_account_info(
-    credentials_info,
+# 直接读取本地 credentials.json 文件
+credentials = service_account.Credentials.from_service_account_file(
+    "credentials.json",
     scopes=["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 )
 gc = gspread.authorize(credentials)
