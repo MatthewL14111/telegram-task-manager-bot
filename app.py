@@ -6,6 +6,7 @@ import os
 import gspread
 from google.oauth2 import service_account
 from datetime import datetime
+import tempfile
 
 app = Flask(__name__)
 
@@ -15,8 +16,12 @@ GOOGLE_CREDENTIALS_JSON = os.environ.get('GOOGLE_CREDENTIALS_JSON')
 
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 
-credentials_info = json.loads(GOOGLE_CREDENTIALS_JSON)
-credentials = service_account.Credentials.from_service_account_info(credentials_info, scopes=["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"])
+# 将 JSON 写入临时文件
+with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.json') as temp:
+    temp.write(GOOGLE_CREDENTIALS_JSON)
+    temp_path = temp.name
+
+credentials = service_account.Credentials.from_service_account_file(temp_path, scopes=["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"])
 gc = gspread.authorize(credentials)
 sheet = gc.open_by_key(SHEET_ID).sheet1
 
