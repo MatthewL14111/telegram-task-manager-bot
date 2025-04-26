@@ -14,12 +14,17 @@ SHEET_ID = os.environ.get('SHEET_ID')
 
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 
-# 动态从环境变量读取 credentials JSON
-credentials_info = json.loads(os.environ.get("GOOGLE_CREDENTIALS_JSON"))
+# 重点修正：环境变量中 \n 转为 
+
+credentials_raw = os.environ.get("GOOGLE_CREDENTIALS_JSON")
+credentials_str = credentials_raw.replace('\\n', '\n')
+credentials_info = json.loads(credentials_str)
+
 credentials = service_account.Credentials.from_service_account_info(
     credentials_info,
     scopes=["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 )
+
 gc = gspread.authorize(credentials)
 sheet = gc.open_by_key(SHEET_ID).sheet1
 
@@ -48,4 +53,4 @@ def webhook():
 
     return "ok"
 
-# 后续保持原有逻辑：create_task, update_task_status, list_my_tasks, list_today_deadlines, send_menu, send_message
+# (其他函数逻辑略，为原来内容)
