@@ -16,9 +16,9 @@ GOOGLE_CREDENTIALS_JSON = os.environ.get('GOOGLE_CREDENTIALS_JSON')
 
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 
-# 将 JSON 写入临时文件
+# 将 JSON 字符串解析后重新格式化写入临时文件
 with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.json') as temp:
-    temp.write(GOOGLE_CREDENTIALS_JSON)
+    temp.write(json.dumps(json.loads(GOOGLE_CREDENTIALS_JSON), indent=2))
     temp_path = temp.name
 
 credentials = service_account.Credentials.from_service_account_file(temp_path, scopes=["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"])
